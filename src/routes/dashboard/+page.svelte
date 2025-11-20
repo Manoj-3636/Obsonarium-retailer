@@ -79,13 +79,12 @@
 			>
 				Retailer Dashboard
 			</h1>
-
-			<Button variant="ghost" href={resolve("/")}>Back to Home</Button>
+``
 		</div>
 	</header>
 
 	<main class="container mx-auto px-4 py-10">
-		<h2 class="text-3xl font-bold tracking-tight mb-2">Welcome, Retailer</h2>
+		<h2 class="text-3xl font-bold tracking-tight mb-2">Welcome</h2>
 		<p class="text-muted-foreground mb-10">
 			Manage your store, track orders, handle customers, and place wholesale orders.
 		</p>

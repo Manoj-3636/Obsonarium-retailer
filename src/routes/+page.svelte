@@ -12,7 +12,7 @@
 		
 		// Check if user is already authenticated
 		// If so, redirect to dashboard (or onboarding if not onboarded)
-		checkAuth();
+		// checkAuth();
 	});
 
 	async function checkAuth() {

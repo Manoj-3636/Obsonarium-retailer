@@ -1,13 +1,63 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
+	import { goto } from '$app/navigation';
 
 	let visible = false;
 	let tagline = '"Start selling"';
+	let hasRedirected = false;
 	
 	onMount(() => {
 		visible = true;
+		
+		// Check if user is already authenticated
+		// If so, redirect to dashboard (or onboarding if not onboarded)
+		checkAuth();
 	});
+
+	async function checkAuth() {
+		// Prevent multiple redirects
+		if (hasRedirected) return;
+
+		try {
+			const response = await fetch('/api/retailers/me', {
+				credentials: 'include'
+			});
+
+			// If not authenticated (401), redirect to signin
+			if (response.status === 401) {
+				if (!hasRedirected) {
+					hasRedirected = true;
+					await goto('/signin');
+				}
+				return;
+			}
+
+			// If authenticated, redirect to appropriate page after a short delay
+			// This prevents jarring immediate redirects
+			if (response.ok) {
+				const data = await response.json();
+				// Small delay to let the page render first
+				setTimeout(async () => {
+					if (!hasRedirected) {
+						hasRedirected = true;
+						if (data.onboarded) {
+							await goto('/dashboard');
+						} else {
+							await goto('/onboarding');
+						}
+					}
+				}, 300);
+			}
+		} catch (error) {
+			// On error, redirect to signin
+			console.error('Error checking auth:', error);
+			if (!hasRedirected) {
+				hasRedirected = true;
+				await goto('/signin');
+			}
+		}
+	}
 </script>
 
 <div

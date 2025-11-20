@@ -50,8 +50,11 @@
 	}
 </script>
 
-<div class="min-h-screen bg-background px-4 py-8 md:px-8">
+	<div class="min-h-screen bg-background px-4 py-8 md:px-8">
 	<div class="mx-auto max-w-6xl">
+		<Button variant="ghost" class="mb-6 px-0" href={resolve('/dashboard')}>
+			&larr; Back to Dashboard
+		</Button>
 		<div class="mb-8 flex items-center justify-between">
 			<div>
 				<h1 class="text-3xl font-bold tracking-tight">Inventory</h1>
@@ -108,14 +111,4 @@
 			</div>
 		{/if}
 	</div>
-
-	<a
-		href="/inventory/new"
-		class="fixed bottom-6 right-6 bg-blue-600 text-white p-4 rounded-full shadow-lg"
-		aria-label="Add product"
-	>
-		+
-	</a>
 </div>
-
-min-h-20

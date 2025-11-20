@@ -79,7 +79,6 @@
 			>
 				Retailer Dashboard
 			</h1>
-``
 		</div>
 	</header>
 

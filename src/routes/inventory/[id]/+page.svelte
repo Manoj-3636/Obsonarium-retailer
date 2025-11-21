@@ -4,7 +4,9 @@
 	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
-	import { Loader2, ImageIcon, Trash2 } from '@lucide/svelte';
+	import * as Card from '$lib/components/ui/card';
+	import { Skeleton } from '$lib/components/ui/skeleton';
+	import { Loader2, ImageIcon, Trash2, Star } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 
 	let productId = '';
@@ -24,8 +26,24 @@
 
 	let fileInput: HTMLInputElement | null = $state(null);
 
+	// Reviews state
+	interface Review {
+		id: number;
+		user_id: number;
+		reviewer_name: string;
+		rating: number;
+		comment: string;
+		created_at: string;
+	}
+
+	let reviews = $state<Review[]>([]);
+	let reviewsLoading = $state(false);
+
 	onMount(async () => {
 		await loadProduct();
+		if (productId) {
+			loadReviews(parseInt(productId));
+		}
 	});
 
 	async function loadProduct() {
@@ -193,6 +211,21 @@
 			deleting = false;
 		}
 	}
+
+	async function loadReviews(productId: number) {
+		reviewsLoading = true;
+		try {
+			const res = await fetch(`/api/products/${productId}/reviews`);
+			if (res.ok) {
+				const data = await res.json();
+				reviews = data.reviews || [];
+			}
+		} catch (err) {
+			console.error('Failed to load reviews:', err);
+		} finally {
+			reviewsLoading = false;
+		}
+	}
 </script>
 
 <div class="min-h-screen bg-background px-4 py-8 md:px-8">
@@ -306,6 +339,58 @@
 						</Button>
 					</div>
 				</form>
+			</div>
+
+			<!-- Reviews Section -->
+			<div class="mt-8 space-y-6 rounded-lg border bg-card p-6 shadow-sm">
+				<h2 class="text-2xl font-bold">Product Reviews ({reviews.length})</h2>
+
+				{#if reviewsLoading}
+					<div class="space-y-4">
+						{#each Array(3) as _}
+							<Card.Root>
+								<Card.Content class="p-4">
+									<Skeleton class="h-6 w-1/4 mb-2" />
+									<Skeleton class="h-4 w-full mb-2" />
+									<Skeleton class="h-4 w-3/4" />
+								</Card.Content>
+							</Card.Root>
+						{/each}
+					</div>
+				{:else if reviews.length === 0}
+					<Card.Root>
+						<Card.Content class="p-6 text-center text-muted-foreground">
+							<p>No reviews yet for this product.</p>
+						</Card.Content>
+					</Card.Root>
+				{:else}
+					<div class="space-y-4">
+						{#each reviews as review (review.id)}
+							<Card.Root>
+								<Card.Content class="p-4">
+									<div class="flex items-center justify-between mb-2">
+										<div class="flex items-center gap-3">
+											<div class="flex gap-1">
+												{#each Array(5) as _, i}
+													<Star
+														class="size-4 {review.rating > i
+															? 'fill-yellow-400 text-yellow-400'
+															: 'text-muted-foreground'}"
+													/>
+												{/each}
+											</div>
+											<span class="text-sm font-medium">{review.reviewer_name || 'Anonymous'}</span>
+										</div>
+										<span class="text-sm text-muted-foreground">
+											{new Date(review.created_at).toLocaleDateString()}
+										</span>
+									</div>
+									<p class="text-sm whitespace-pre-wrap mt-2">{review.comment}</p>
+								</Card.Content>
+							</Card.Root>
+						{/each}
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</div>

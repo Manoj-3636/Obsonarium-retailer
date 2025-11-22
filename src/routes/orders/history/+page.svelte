@@ -3,12 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Skeleton } from '$lib/components/ui/skeleton';
-	import {
-		Loader2,
-		Package,
-		CheckCircle2,
-		XCircle
-	} from '@lucide/svelte';
+	import { Loader2, Package, CheckCircle2, XCircle } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { resolve } from '$app/paths';
 
@@ -94,7 +89,7 @@
 		</Button>
 
 		<div class="mb-8">
-			<h1 class="text-3xl font-bold tracking-tight mb-2">Order History</h1>
+			<h1 class="mb-2 text-3xl font-bold tracking-tight">Order History</h1>
 			<p class="text-muted-foreground">View completed and rejected orders</p>
 		</div>
 
@@ -103,8 +98,8 @@
 				{#each Array(3) as _}
 					<Card.Root>
 						<Card.Content class="p-6">
-							<Skeleton class="h-6 w-1/4 mb-4" />
-							<Skeleton class="h-4 w-full mb-2" />
+							<Skeleton class="mb-4 h-6 w-1/4" />
+							<Skeleton class="mb-2 h-4 w-full" />
 							<Skeleton class="h-4 w-3/4" />
 						</Card.Content>
 					</Card.Root>
@@ -120,20 +115,31 @@
 		{:else if orders.length === 0}
 			<Card.Root>
 				<Card.Content class="p-12 text-center">
-					<Package class="size-12 mx-auto mb-4 text-muted-foreground" />
-					<p class="text-lg font-medium mb-2">No order history yet</p>
+					<Package class="mx-auto mb-4 size-12 text-muted-foreground" />
+					<p class="mb-2 text-lg font-medium">No order history yet</p>
 					<p class="text-muted-foreground">Completed and rejected orders will appear here.</p>
 				</Card.Content>
 			</Card.Root>
 		{:else}
 			<div class="space-y-6">
 				{#each orders as order (order.id)}
-					<Card.Root class="overflow-hidden border shadow-sm rounded-xl">
-						<Card.Header class="bg-muted/40 px-6 py-4 flex justify-between">
+					<Card.Root class="overflow-hidden rounded-xl border shadow-sm">
+						<Card.Header class="flex justify-between bg-muted/40 px-6 py-4">
 							<div>
-								<h2 class="font-semibold text-lg">Order #{order.id}</h2>
+								<h2 class="text-lg font-semibold">Order #{order.id}</h2>
 								<p class="text-sm text-muted-foreground">
-									{new Date(order.created_at).toLocaleString()}
+									{new Date(
+										order.created_at.endsWith('Z')
+											? order.created_at.slice(0, -1)
+											: order.created_at
+									).toLocaleString('en-IN', {
+										year: 'numeric',
+										month: 'short',
+										day: 'numeric',
+										hour: '2-digit',
+										minute: '2-digit',
+										hour12: true
+									})}
 								</p>
 							</div>
 							<div class="text-right">
@@ -141,12 +147,12 @@
 							</div>
 						</Card.Header>
 
-						<Card.Content class="px-6 py-4 space-y-5">
+						<Card.Content class="space-y-5 px-6 py-4">
 							{#each order.items as item (item.id)}
 								{@const StatusIcon = getStatusIcon(item.status)}
-								<div class="border rounded-lg p-4 shadow-sm bg-card">
+								<div class="rounded-lg border bg-card p-4 shadow-sm">
 									<!-- ITEM HEADER -->
-									<div class="flex justify-between items-center mb-3">
+									<div class="mb-3 flex items-center justify-between">
 										<div>
 											<p class="font-medium">Product #{item.product_id}</p>
 											<p class="text-sm text-muted-foreground">
@@ -155,7 +161,7 @@
 										</div>
 
 										<div
-											class="rounded-full px-3 py-1 text-xs font-medium border {getStatusColor(
+											class="rounded-full border px-3 py-1 text-xs font-medium {getStatusColor(
 												item.status
 											)}"
 										>
@@ -170,7 +176,7 @@
 									</div>
 
 									<!-- COMPLETED STATUS -->
-									<div class="text-sm text-green-600 font-medium flex items-center gap-2">
+									<div class="flex items-center gap-2 text-sm font-medium text-green-600">
 										{#if item.status === 'delivered'}
 											<CheckCircle2 class="size-4" />
 											Order Completed Successfully
@@ -188,4 +194,3 @@
 		{/if}
 	</div>
 </div>
-

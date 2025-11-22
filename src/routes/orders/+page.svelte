@@ -175,7 +175,14 @@
 							<div>
 								<h2 class="font-semibold text-lg">Order #{order.id}</h2>
 								<p class="text-sm text-muted-foreground">
-									{new Date(order.created_at).toLocaleString()}
+									{new Date(order.created_at.endsWith('Z') ? order.created_at.slice(0, -1) : order.created_at).toLocaleString('en-IN', {
+										year: 'numeric',
+										month: 'short',
+										day: 'numeric',
+										hour: '2-digit',
+										minute: '2-digit',
+										hour12: true
+									})}
 								</p>
 							</div>
 							<div class="text-right">

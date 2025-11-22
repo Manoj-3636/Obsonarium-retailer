@@ -233,7 +233,9 @@
 				</Card.Content>
 			</Card.Root>
 
-			<Button size="lg" class="w-full mt-4">Proceed to Checkout</Button>
+			<Button size="lg" class="w-full mt-4" href={resolve('/wholesale/checkout')}>
+				Proceed to Checkout
+			</Button>
 		</div>
 	{/if}
 </main>

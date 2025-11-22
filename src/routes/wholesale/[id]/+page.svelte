@@ -98,6 +98,12 @@
 	async function addToCart() {
 		if (!product) return;
 
+		// Check stock availability
+		if (product.stock_qty === 0) {
+			toast.error('This product is out of stock');
+			return;
+		}
+
 		product.isQtyLoading = true;
 		if (product.cartQty === null) product.cartQty = 0;
 
@@ -133,6 +139,12 @@
 
 	async function increaseQty() {
 		if (!product || product.cartQty === null) return;
+
+		// Check stock limit before increasing
+		if (product.cartQty >= product.stock_qty) {
+			toast.error(`Only ${product.stock_qty} available in stock. Cannot add more.`);
+			return;
+		}
 
 		const old = product.cartQty;
 		product.cartQty++;
@@ -257,7 +269,13 @@
 								<span class="text-xl font-semibold">{product.cartQty}</span>
 							{/if}
 
-							<Button size="lg" disabled={product.isQtyLoading} onclick={increaseQty}>+</Button>
+							<Button 
+								size="lg" 
+								disabled={product.isQtyLoading || (product.cartQty !== null && product.cartQty >= product.stock_qty)} 
+								onclick={increaseQty}
+							>
+								+
+							</Button>
 						</div>
 					{/if}
 				</div>

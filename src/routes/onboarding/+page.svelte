@@ -3,13 +3,20 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
+	import { Label } from '$lib/components/ui/label';
 	import { Loader2 } from '@lucide/svelte';
 	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
+	import AddressAutocomplete from '$lib/components/address-autocomplete.svelte';
+	import MapPicker from '$lib/components/map-picker.svelte';
 
 	let businessName = '';
 	let phone = '';
 	let address = '';
+	let latitude: number | null = null;
+	let longitude: number | null = null;
+	let addressSearchValue = '';
+	let showMapPicker = false;
 	let loading = false;
 	let fetching = true;
 	let redirecting = false;
@@ -83,6 +90,8 @@
 				businessName = data.retailer.business_name || '';
 				phone = data.retailer.phone || '';
 				address = data.retailer.address || '';
+				latitude = data.retailer.latitude || null;
+				longitude = data.retailer.longitude || null;
 			}
 		} catch (error) {
 			console.error('Error fetching retailer profile:', error);
@@ -91,6 +100,29 @@
 			fetching = false;
 		}
 	});
+
+	function handleAddressSelect(result: {
+		latitude: number;
+		longitude: number;
+		display_name: string;
+		address: {
+			street_address: string;
+			city: string;
+			state: string;
+			postcode: string;
+			country: string;
+		};
+	}) {
+		address = result.display_name;
+		latitude = result.latitude;
+		longitude = result.longitude;
+		addressSearchValue = result.display_name;
+	}
+
+	function handleLocationChange(lat: number, lon: number) {
+		latitude = lat;
+		longitude = lon;
+	}
 
 	async function handleSubmit() {
 		if (!businessName.trim() || !phone.trim() || !address.trim()) {
@@ -115,7 +147,9 @@
 				body: JSON.stringify({
 					business_name: businessName.trim(),
 					phone: sanitizePhone(phone), // Ensure only 10 digits are sent
-					address: address.trim()
+					address: address.trim(),
+					latitude: latitude,
+					longitude: longitude
 				})
 			});
 
@@ -198,17 +232,44 @@
 					</div>
 
 					<div class="space-y-2">
-						<label for="address" class="text-sm font-medium">Business Address *</label>
+						<Label for="address">Business Address *</Label>
+						<AddressAutocomplete
+							value={addressSearchValue}
+							onSelect={handleAddressSelect}
+						/>
 						<textarea
 							id="address"
 							bind:value={address}
 							placeholder="Enter your business address"
 							required
 							disabled={loading}
-							class="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+							class="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 mt-2"
 							rows="3"
 						></textarea>
 					</div>
+
+					<div class="flex gap-2">
+						<Button
+							type="button"
+							variant={showMapPicker ? 'default' : 'outline'}
+							class="flex-1"
+							onclick={() => (showMapPicker = !showMapPicker)}
+							disabled={loading}
+						>
+							{showMapPicker ? 'Hide Map' : 'Show Map'}
+						</Button>
+					</div>
+
+					{#if showMapPicker}
+						<div class="space-y-2">
+							<Label>Select Shop Location on Map</Label>
+							<MapPicker
+								bind:latitude={latitude}
+								bind:longitude={longitude}
+								onLocationChange={handleLocationChange}
+							/>
+						</div>
+					{/if}
 
 					<div class="flex gap-4 pt-4">
 						<Button type="submit" class="flex-1" disabled={loading}>

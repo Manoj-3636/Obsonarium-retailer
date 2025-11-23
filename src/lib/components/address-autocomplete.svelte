@@ -71,7 +71,8 @@
 					longitude: parseFloat(item.lon),
 					display_name: item.display_name,
 					address: {
-						street_address: `${item.address?.house_number || ''} ${item.address?.road || ''}`.trim(),
+						street_address:
+							`${item.address?.house_number || ''} ${item.address?.road || ''}`.trim(),
 						city: item.address?.city || item.address?.town || item.address?.village || '',
 						state: item.address?.state || '',
 						postcode: item.address?.postcode || '',
@@ -113,7 +114,7 @@
 
 <div class="relative w-full">
 	<div class="relative">
-		<MapPin class="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+		<MapPin class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 		<Input
 			type="text"
 			placeholder="Search for an address..."
@@ -123,7 +124,9 @@
 			class="pl-10"
 		/>
 		{#if loading}
-			<Loader2 class="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+			<Loader2
+				class="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground"
+			/>
 		{/if}
 	</div>
 
@@ -138,6 +141,7 @@
 					class="w-full rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
 					onclick={() => selectResult(result)}
 					role="option"
+					aria-selected="false"
 				>
 					<div class="font-medium">{result.display_name}</div>
 				</button>
@@ -145,4 +149,3 @@
 		</div>
 	{/if}
 </div>
-

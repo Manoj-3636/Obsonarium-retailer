@@ -16,6 +16,7 @@
 		id: number;
 		order_id: number;
 		product_id: number;
+		product_name?: string;
 		qty: number;
 		unit_price: number;
 		status: string;
@@ -197,7 +198,7 @@
 									<!-- ITEM HEADER -->
 									<div class="flex justify-between items-center mb-3">
 										<div>
-											<p class="font-medium">Product #{item.product_id}</p>
+											<p class="font-medium">{item.product_name || `Product #${item.product_id}`}</p>
 											<p class="text-sm text-muted-foreground">
 												Qty: {item.qty} × ₹{item.unit_price.toFixed(2)}
 											</p>

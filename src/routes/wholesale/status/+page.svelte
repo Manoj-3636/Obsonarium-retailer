@@ -11,6 +11,7 @@
 		id: number;
 		order_id: number;
 		product_id: number;
+		product_name?: string;
 		qty: number;
 		unit_price: number;
 		status: string;
@@ -168,7 +169,7 @@
 										<div class="rounded-lg border bg-card p-4 shadow-sm">
 											<div class="mb-3 flex items-center justify-between">
 												<div>
-													<p class="font-medium">Product #{item.product_id}</p>
+													<p class="font-medium">{item.product_name || `Product #${item.product_id}`}</p>
 													<p class="text-sm text-muted-foreground">
 														Quantity: {item.qty} × ₹{item.unit_price.toFixed(2)}
 													</p>
@@ -215,7 +216,7 @@
 										<div class="rounded-lg border bg-card p-4 shadow-sm">
 											<div class="mb-3 flex items-center justify-between">
 												<div>
-													<p class="font-medium">Product #{item.product_id}</p>
+													<p class="font-medium">{item.product_name || `Product #${item.product_id}`}</p>
 													<p class="text-sm text-muted-foreground">
 														Quantity: {item.qty} × ₹{item.unit_price.toFixed(2)}
 													</p>
